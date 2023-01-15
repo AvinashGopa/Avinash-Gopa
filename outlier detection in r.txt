@@ -1,0 +1,62 @@
+#Residual analysis
+
+d4reg <- read.csv(file.choose(), header=T)
+d4reg
+d4reg1 <- d4reg[-16,]
+plot(d4reg1)
+
+#rotating plots (3D scatter plots)
+# https://stackoverflow.com/questions/3792803/is-it-possible-to-rotate-a-plot-in-r-base-graphics
+library(rgl)
+attach(d4reg1)
+plot3d(Y, X1, X2, col="red", size=3)
+
+
+# Fit regression model
+our_model <- lm(Y ~ X1+X2, # regression formula
+                data=d4reg1) # data set
+
+summary(our_model)
+methods(class=class(our_model))
+rr<-residuals(our_model)
+sum(rr)
+anova(our_model)
+
+#Predictions
+d4pred <- d4reg[16,2:3]
+d4pred
+predictions <- our_model %>% predict(d4pred)
+actual<- d4reg[16,1]
+actual
+
+yhat<-predict(our_model)
+plot(pre, rr, ylab="Residuals", xlab="Predicted values", main="Plot of predicted values versus residuals") 
+abline(0, 0)                  
+
+#https://www.statisticshowto.com/q-q-plots/#:~:text=Q%20Q%20Plots%20(Quantile%2DQuantile%20plots,two%20quantiles%20against%20each%20other.&text=For%20example%2C%20the%20median%20is,come%20from%20the%20same%20distribution.
+qqnorm(rr, pch = 1, frame = FALSE)
+qqline(rr, col = "steelblue", lwd = 2)
+library("car")
+qqPlot(rr)
+
+
+
+#outlier detection measures
+d4reg2 <- read.csv(file.choose(), header=T)
+d4reg2
+d4reg2 <- d4reg[,-1]
+our_model1 <- lm(Y ~ X1+X2+X3, # regression formula
+                data=d4reg1) # data set
+plot(d4reg2)
+measures_ram<-influence.measures(our_model1)
+
+
+plot(dffits(our_model1), pch=23, bg='orange', cex=0.1, ylab="DFFITS")
+d4reg1[which(dffits(our_model1) > 0.5),]
+plot(cooks.distance(our_model1), pch=23, bg='orange', cex=0.1, ylab="Cook's distance")
+d4reg1[which(cooks.distance(our_model1) > 0.1),]
+plot(dfbetas(our_model1)[,'X1'], pch=23, bg='orange', cex=0.1, ylab="DFBETA (X1)")
+d4reg1[which(abs(dfbetas(our_model1)[,'X1']) > 1),]
+
+plot(hatvalues(our_model1), pch=23, bg='orange', cex=0.1, ylab='Hat values')
+d4reg1[which(hatvalues(our_model1) > 0.3),]

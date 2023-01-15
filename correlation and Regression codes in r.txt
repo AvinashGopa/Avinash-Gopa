@@ -1,0 +1,102 @@
+#correation coefficient
+
+cor.test(SeedYld,FruitWt)
+
+cor.test(SeedYld,FruitWt,method="s")
+
+#partial crreation coefficient
+
+library(ppcor)
+
+pcor(FruitData, method = c("pearson", "kendall", "spearman"))
+
+ 
+
+#regression model of SeedYld on SeedlingLen
+
+reg<-lm(SeedYld ~SeedlingLen)
+
+summary(reg)
+
+#regression model of SeedYld on SeedlingLen, FruitWt and NrFruits
+
+ 
+
+reg1<-lm(SeedYld ~SeedlingLen+FruitWt+NrFruits)
+
+summary(reg1)
+
+#regression model of SeedYld on SeedlingLen without intercept
+
+reg<-lm(SeedYld ~-1+SeedlingLen)
+
+#prediction using regression model
+
+lm.predict<-predict(reg,FruitData,interval="confidence")
+
+ 
+
+#Residual diagnostics of the fitted model
+
+par(mfrow = c(2, 2))
+
+plot(reg)
+
+#For plotting cook’s distance
+
+plot(reg, 4)
+
+#distribution fitting in r
+library(MASS)
+
+fitdistr(SeedYld,"normal")
+
+library(vcd)## loading vcd package
+
+gf<-goodfit(SeedYld,type= "normal",method= "MinChisq")
+
+summary(gf)
+
+ 
+
+library(olsrr)
+
+# Fit the full model 
+
+full.model <- lm(Fertility ~., data = swiss)
+
+# Fit the model with stepwise selection procedure
+
+ols_step_both_p(full.model)
+
+# Fitting of robust regression model 
+
+library(MASS)
+
+reg1<-rlm(x1~x2+x3+x4+x5)
+
+ 
+
+summary(reg1)
+
+library(car)
+
+vif(full.model)
+
+ 
+
+# Residual QQ Plot
+
+ols_plot_resid_qq(full.model)
+
+# Residual Normality Test
+
+ols_test_normality(full.model)
+
+# Residual vs Fitted Values Plot
+
+ols_plot_resid_fit(full.model)
+
+# Residual Histogram
+
+ols_plot_resid_hist(full.model)​
