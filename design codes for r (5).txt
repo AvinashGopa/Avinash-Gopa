@@ -1,0 +1,277 @@
+# Completely Randomized Design
+
+
+# import dataset
+library(readxl)
+crd_1_ <- read_excel("C:/Users/Mr.Jay/Desktop/Data Analysis Assignment-RStudio/crd (1).xls", col_types = c("text", "numeric"))
+# view dataset
+crd_1_
+# to know about row and column information
+str(crd_1_)
+# to change "trt" as "character"
+crd_1_$trt <- as.character(crd_1_$trt)
+# to check the changes
+str(crd_1_)
+# fitting of linear model
+model<- lm(crd_1_$yld~crd_1_$trt)
+# obtains R square and other statistics of fitted model
+summary<- summary(model)
+
+# carryout ANOVA
+anova <-anova(model)
+anova
+# below codes are used to obtain plots of fitted vs Residuals and Normal QQ plots
+par(mfrow=c(1,2))
+plot(model1,which=1)
+plot(model1,which=2)
+
+# carry out LSD test
+install.packages("agricolae")
+library(agricolae)
+
+lsd<-LSD.test(crd_1_$yld,crd_1_$trt, 66, 37275.4988537549)
+lsd
+
+
+
+
+
+
+
+# RCBD
+
+library(readxl)
+RCBD <- read_excel("C:/Users/Mr.Jay/Desktop/RCBD.xlsx", 
+                col_types = c("text", "text", "numeric"))
+RCBD
+#
+# to know about row and column information
+str(RCBD)
+
+# to change "treatment" and "replication" are as "character"
+RCBD$Replication <- as.character(RCBD$Replication)
+RCBD$Variety <- as.character(RCBD$Variety)
+# to check the changes
+str(RCBD)
+# fitting of linear model
+model<- lm(RCBD$Yield~RCBD$Replication+RCBD$Variety)
+# obtains R square and other statistics of fitted model
+summary<- summary(model)
+summary
+# carryout ANOVA
+anova <-anova(model)
+anova
+# below codes are used to obtain plots of Normal QQ plots
+par(mfrow=c(1,2))
+plot(model,which=2)
+
+# carry out multiple comparison test (Duncan and LSD test)
+install.packages("agricolae")
+library(agricolae)
+
+# Duncan test
+duncan <-duncan.test(RCBD$Yield,RCBD$Variety,12,29.259)
+duncan
+# LSD test
+lsd<-LSD.test(RCBD$Yield,RCBD$Variety,12,29.259)
+lsd
+
+
+
+
+
+
+
+
+# Latin Square Design
+
+library(readxl)
+lsd <- read_excel("C:/Users/Mr.Jay/Desktop/Data Analysis Assignment-RStudio/lsd.xls", col_types = c("text", "text", "text",  "numeric"))
+lsd
+#
+# to know about row and column information
+str(lsd)
+# to change "treatment" and "replication" are as "character"
+lsd$row <- as.character(lsd$row)
+lsd$col <- as.character(lsd$col)
+lsd$trt <- as.character(lsd$trt)
+# to check the changes
+str(lsd)
+# fitting of linear model
+model<- lm(lsd$yield~lsd$row+lsd$col+lsd$trt)
+# obtains R square and other statistics of fitted model
+summary<- summary(model)
+summary
+# carryout ANOVA
+anova <-anova(model)
+anova
+# below codes are used to obtain plots of Normal QQ plots
+par(mfrow=c(1,2))
+plot(model,which=2)
+
+# carry out multiple comparison test (Duncan and LSD test)
+install.packages("agricolae")
+library(agricolae)
+
+# Duncan test
+duncan <-duncan.test(lsd$yield,lsd$trt,20,1.2547)
+duncan
+# LSD test
+lsd<-LSD.test(lsd$yield,lsd$trt,20,1.2547)
+lsd
+
+
+
+
+
+
+
+# Factorial RCBD
+
+library(readxl)
+fact <- read_excel("C:/Users/Mr.Jay/Desktop/Data Analysis Assignment-RStudio/fact.xls",col_types = c("text", "numeric", "numeric", "numeric", "numeric", "numeric"))
+fact
+#
+# to know about row and column information
+str(fact)
+# to change "treatment" ,"replication" are as "character" and all the factor are as "factor"
+fact$Replication <- as.character(fact$Replication)
+fact$FYM <- as.factor(fact$FYM)
+fact$P <- as.factor(fact$P)
+fact$PSB <- as.factor(fact$PSB)
+fact$Treatment <- as.character(fact$Treatment)
+fact$Yield <- as.numeric(fact$Yield)
+# to check the changes
+str(fact)
+# fitting of linear model
+model<- lm(fact$Yield~fact$Replication+fact$FYM+fact$P+fact$PSB+fact$FYM:fact$P+fact$FYM:fact$PSB+fact$P:fact$PSB+fact$FYM: fact$P : fact$PSB)
+# obtains R square and other statistics of fitted model
+summary<- summary(model)
+summary
+# carryout ANOVA
+anova <-anova(model)
+anova
+
+
+# carry out multiple comparison test (Duncan and LSD test)
+install.packages("agricolae")
+library(agricolae)
+
+# Duncan test
+duncan <-duncan.test(fact$Yield,fact$Treatment,33,0.02522,console = TRUE)
+# LSD test
+lsd<-LSD.test(fact$Yield,fact$Treatment,33,0.02522,console = TRUE)
+
+
+
+
+
+
+
+
+
+
+# Split Plot Design
+
+
+# import dataset
+library(readxl)
+split <- read_excel("Data Analysis Assignment-RStudio/split.xls", 
+                    col_types = c("numeric", "numeric", "numeric", "numeric"))
+# view dataset
+split
+head(split)
+# to know about row and column information 
+str(split)
+# to change all the factor are as "factor"
+split$Method.of.Sowing <- as.factor(split$Method.of.Sowing)
+split$`Manurial Treatments` <- as.factor(split$`Manurial Treatments`)
+# to check about the above changes
+str(split)
+# fitting of model
+model<- with(split,sp.plot(split$Replication, split$Method.of.Sowing, split$`Manurial Treatments`,split$Yield))
+
+# LSD-test
+gla <- model$gl.a
+glb <- model$gl.b
+Ea <- model$Ea
+Eb <- model$Eb
+
+
+out1 <- with(split, LSD.test(split$Yield, split$Method.of.Sowing, gla, Ea))
+out1
+out2 <- with(split, LSD.test(split$Yield, split$`Manurial Treatments`, glb, Eb))
+out2
+
+
+
+
+
+
+
+
+# Strip Plot Design
+
+
+# import dataset
+library(readxl)
+strip <- read_excel("C:/Users/Mr.Jay/Desktop/Data Analysis Assignment-RStudio/strip.xls",col_types = c("text", "numeric", "numeric", "numeric"))
+# view dataset
+strip
+head(strip)
+# to know about row and column information 
+str(strip)
+# to change all the factor are as "factor"
+strip$A <- as.factor(strip$A)
+strip$B <- as.factor(strip$B)
+# to check about the above changes
+str(strip)
+# fitting of model
+model<- with(strip,strip.plot(strip$Replication, strip$A, strip$B, strip$Yield))
+
+# LSD-test
+gla <- model$gl.a
+glb <- model$gl.b
+glc <- model$gl.c
+Ea <- model$Ea
+Eb <- model$Eb
+Ec <- model$Ec
+
+
+out1 <- with(strip, LSD.test(strip$Yield, strip$A, gla, Ea))
+out1
+out2 <- with(strip, LSD.test(strip$Yield, strip$A, glb, Eb))
+out2
+out3 <- with(strip, LSD.test(strip$Yield, strip$A:strip$B,glc,Ec))
+out3
+
+
+
+
+
+
+
+# Augmented block design
+
+
+# import dataset
+library(readxl)
+augmented <- read_excel("C:/Users/Mr.Jay/Desktop/Data Analysis Assignment-RStudio/augmented.xls", col_types = c("text", "numeric", "numeric", "numeric"))
+augmented
+# to change "block" and "treatment" as "vector"
+augmented$Block <- as.vector(augmented$Block)
+augmented$Treatment <- as.vector(augmented$Treatment)
+str(augmented)
+
+#  
+DAU.test(augmented$Block, augmented$Treatment, augmented$GrainWeight, method = c("lsd","tukey"),alpha=0.05,group=TRUE, console = TRUE)
+
+
+
+
+
+
+
+
+
+   
